@@ -48,8 +48,48 @@ variable "environment" {
 }
 
 variable "stage_input" {
-  description = "Tags to be attached to the CodePipeline"
-  type        = list(map(any))
+    type = map(object({
+        name = string
+        category = string
+        owner = string
+        provider = string
+        input_artifacts = string
+        output_artifacts = string
+    }))
+    default = {
+        stage1 = {
+          name = "validate"
+          category = "Test"
+          owner = "AWS"
+          provider = "CodeBuild"
+          input_artifacts = "SourceOutput"
+          output_artifacts = "ValidateOutput"
+      },
+        stage2 = {
+          name = "plan"
+          category = "Test"
+          owner = "AWS"
+          provider = "CodeBuild"
+          input_artifacts = "ValidateOutput"
+          output_artifacts = "PlanOutput"
+      }
+      stage3 = {
+          name = "apply"
+          category = "Build"
+          owner = "AWS"
+          provider = "CodeBuild"
+          input_artifacts = "PlanOutput"
+          output_artifacts = "ApplyOutput"
+      },
+        stage4 = {
+          name = "destroy"
+          category = "Build"
+          owner = "AWS"
+          provider = "CodeBuild"
+          input_artifacts = "ApplyOutput"
+          output_artifacts = "DestroyOutput"
+      }
+    }
 }
 
 variable "build_projects" {
